@@ -59,30 +59,34 @@ router.post("/movies/:id/delete", (req, res) => {
 
 
 router.get("/movies/:id/edit", async (req,res)=>{
-    const {id} = req.params
 
-    try {       
-        const movie = await Movie.findById(id)
-        const celebrities = await Celebrity.find()
-        res.render("movies/edit-movie", movie, celebrities)
-    }
-    catch (err){
+    try {
+      const { id } = req.params;
 
-    }
-})
+      const movie = await Movie.findById(id);
+      const celebrities = await Celebrity.find();
 
-
-router.post("/movies/:id/edit", (req,res)=>{
-
-})
+      res.render('movies/edit-movie', { movie: movie, celebrities: celebrities }); 
+  } catch (error) {
+      console.error(error);
+  }
+});
 
 
+router.post("/movies/:id/edit", async (req,res)=>{
+  try {
+    const { id } = req.params;
+    const { title, genre, plot, cast } = req.body;
 
+    const updatedMovie = await Movie.findByIdAndUpdate(id, { title: title, genre:genre, plot:plot, cast: cast }, { new: true });
 
-
-
-
-
+    console.log(updatedMovie);
+    res.redirect(`/movies/${updatedMovie._id}`);
+} catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+}
+});
 
 
 module.exports = router;
